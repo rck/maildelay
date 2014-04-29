@@ -70,7 +70,7 @@ Actions
 -------
 - immediate:
 Immediately deliver mails. This is an implicit rule that is always
-present.  Its mainly used in cascaded rules as the last rule. A
+present.  It is mainly used in cascaded rules as the last rule. A
 practical example could be a "Box" that specifies "rules:" as
 "WorkCollect, Immediate". Therefore in the working hours "WorkCollect"
 would match and the user does not get disturbed by high-traffic
