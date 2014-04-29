@@ -39,8 +39,8 @@ getmail/fetchmail -> procmail -> maildir-fake/boxes
 maildelay (cron-job) -> maildir/boxes -> imapd/client
 ```
 
-Example Rules
--------------
+Example Config
+--------------
 ```
 [DEFAULT]
 default_buffer_mdir: ~/.maildir-fake
@@ -66,8 +66,11 @@ action: fixed
 at: 15:00, 20:00
 ```
 
-Actions
--------
+Rules/Actions
+-------------
+Rules are always evaluated from left to right. If a rule matches, the other
+rules are not evaluated.
+
 - immediate:
 Immediately deliver mails. This is an implicit rule that is always
 present.  It is mainly used in cascaded rules as the last rule. A
