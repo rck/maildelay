@@ -13,7 +13,7 @@ the problem that you get mail every few minutes and it distracts you
 from your actual work.
 
 Current solution: Check mails N-times a day, otherwise ignore them. Hm,
-but there are mails (from you mom) that require immediate action! What
+but there are mails (from your mom) that require immediate action! What
 we really want is much more flexibility! Wouldn't it be nice if we could
 specify rules like:
 
