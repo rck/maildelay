@@ -18,7 +18,7 @@ we really want is much more flexibility! Wouldn't it be nice if we could
 specify rules like:
 
 - If I am at work, make sure that I get mails from the high-traffic box
-at most ever 2 ours. Send them accumulated, but between these bursts I
+at most every 2 hours. Send them accumulated, but between these bursts I
 want silence from that box.
 - I want silence during my work hours, but otherwise deliver the
 high-traffic mails immediatly (because in my spare time I have nothing
@@ -78,7 +78,7 @@ mailing-lists. In the spare time "WorkCollect" does not match and
 "Immediate" is executed, therefore mails are delivered instantly.
 
 - collect:
-If one mail in the buffer box is older than "for", all buffered mails
+If one mail in the buffer box is older than "for" minutes, all buffered mails
 will be deliverd. This rule is perfect if you do not want to get
 disturbed for the specified amount of minutes. It is like a mail digest
 that is sent every "for" minutes. In between you do not get disturbed.
