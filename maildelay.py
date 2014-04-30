@@ -7,8 +7,7 @@ import os
 
 I_KNOW_WHAT_I_DO = False
 
-def collect(rule, src, dst):
-    # check if current time is between from and to
+def timeinrange(rule):
     if config.has_option(rule, "from") and \
         config.has_option(rule, "to"):
 
@@ -20,12 +19,19 @@ def collect(rule, src, dst):
 
         start_t = cur_t.replace(hour=start_t.hour, minute=start_t.minute)
         end_t = cur_t.replace(hour=end_t.hour, minute=end_t.minute)
-        if not (start_t <= cur_t <= end_t):
+        if start_t <= cur_t <= end_t:
+            print "time in range"
+            return True
+        else:
             print "time not in range"
             return False
     else:
         print "rule has no from or no to"
         return False
+
+
+def collect(rule, src, dst):
+    if not timeinrange(rule): return False
 
     delta_t = datetime.timedelta(minutes=int(config.get(rule, "for")))
 
@@ -45,6 +51,9 @@ def collect(rule, src, dst):
 
     return True
 
+def block(rule, src, dst):
+    return True if timeinrange(rule) else False
+    
 def fixed(rule, src, dst):
     if config.has_option(rule, "at"):
         for opttime in config.get(rule, "at").strip().split(','):
@@ -154,6 +163,9 @@ for box in boxes:
                         ### fixed ###
                         elif action == "fixed":
                             ret = fixed(currule, srcmaildir, dstmaildir)
+                        ### block ###
+                        elif action == "block":
+                            ret = block(currule, srcmaildir, dstmaildir)
                         else:
                             print "unknown action"
                         if ret: break

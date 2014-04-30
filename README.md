@@ -53,7 +53,10 @@ rules: WorkCollect, Immediate
 
 [Box:Gmail]
 # yes it is clever enough to derive {buffer,real}_mdir
-rules: Fixed, Immediate
+rules: Fixed
+
+[Box:Yahoo]
+rules: WorkBlocked, Immediate
 
 [Rule:WorkCollect]
 action: collect
@@ -64,6 +67,11 @@ for: 120
 [Rule:Fixed]
 action: fixed
 at: 15:00, 20:00
+
+[Rule:WorkBlocked]
+action: block
+from: 09:00
+to: 17:00
 ```
 
 Rules/Actions
@@ -79,6 +87,9 @@ practical example could be a "Box" that specifies "rules:" as
 would match and the user does not get disturbed by high-traffic
 mailing-lists. In the spare time "WorkCollect" does not match and
 "Immediate" is executed, therefore mails are delivered instantly.
+
+- block: If the current time is between "from" and "to", do not process a
+single mail from that box.
 
 - collect:
 If one mail in the buffer box is older than "for" minutes, all buffered mails
