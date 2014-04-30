@@ -11,6 +11,8 @@ def timeinrange(rule):
     if config.has_option(rule, "from") and \
         config.has_option(rule, "to"):
 
+        cur_t = datetime.datetime.now()
+
         start_t = config.get(rule, "from")
         end_t = config.get(rule, "to")
 
@@ -33,6 +35,7 @@ def timeinrange(rule):
 def collect(rule, src, dst):
     if not timeinrange(rule): return False
 
+    cur_t = datetime.datetime.now()
     delta_t = datetime.timedelta(minutes=int(config.get(rule, "for")))
 
     move = False
@@ -53,9 +56,10 @@ def collect(rule, src, dst):
 
 def block(rule, src, dst):
     return True if timeinrange(rule) else False
-    
+
 def fixed(rule, src, dst):
     if config.has_option(rule, "at"):
+        cur_t = datetime.datetime.now()
         for opttime in config.get(rule, "at").strip().split(','):
             cfg_t = opttime.strip()
             check_t = datetime.datetime.strptime(cfg_t, "%H:%M")
@@ -76,7 +80,7 @@ def immediate(src, dst):
         srcf = os.path.join(src, mail)
         dstf = os.path.join(dst, mail)
         movefile(srcf, dstf)
-    
+
     return True
 
 def movefile(srcf, dstf):
@@ -101,78 +105,81 @@ def parsemaildir(box, option):
     return os.path.join(maildir, "new")
 
 
-# main
-parser = argparse.ArgumentParser(description="Delay mails and deliver them at \
-                                 specified points in time")
-parser.add_argument('boxes', metavar="box", nargs='*',
-                    help = "zero or more mailboxes matching names in \
-                    configuration. If none specified, all mailboxes are \
-                    processed.")
-parser.add_argument("-c", "--config", dest = "conffile", default = \
-                    "~/.maildelay.cfg", help = "path to configuration \
-                    (~/.maildelay.cfg is the default)")
-parser.add_argument("-f", "--flush", action='store_true', help = "flush the given (or\
-                    all) mailboxes (i.e., apply Rule:Immediate)")
-args = parser.parse_args()
-
 config = ConfigParser.ConfigParser()
-config.read([os.path.expanduser(args.conffile)])
 
-# check if the config has a user defined "Immediate"-rule. If not, create one
-if not config.has_section("Rule:Immediate"):
-    config.add_section("Rule:Immediate")
-    config.set("Rule:Immediate", "action", "immediate")
+def main():
+    parser = argparse.ArgumentParser(description="Delay mails and deliver them at \
+                                     specified points in time")
+    parser.add_argument('boxes', metavar="box", nargs='*',
+                        help = "zero or more mailboxes matching names in \
+                        configuration. If none specified, all mailboxes are \
+                        processed.")
+    parser.add_argument("-c", "--config", dest = "conffile", default = \
+                        "~/.maildelay.cfg", help = "path to configuration \
+                        (~/.maildelay.cfg is the default)")
+    parser.add_argument("-f", "--flush", action='store_true', help = "flush the given (or\
+                        all) mailboxes (i.e., apply Rule:Immediate)")
+    args = parser.parse_args()
 
-if args.boxes:
-    boxes = []
-    for box in args.boxes:
-        boxes.append("Box:" + box)
-else:
-    boxes = config.sections()
-    
-cur_t = datetime.datetime.now()
-for box in boxes:
-    if box.startswith("Box:") and config.has_section(box):
-        print "---", box, "---"
+    # config = ConfigParser.ConfigParser()
+    config.read([os.path.expanduser(args.conffile)])
 
-        srcmaildir = parsemaildir(box, "buffer_mdir")
-        dstmaildir = parsemaildir(box, "real_mdir")
-        if args.flush:
-            immediate(srcmaildir, dstmaildir)
-            continue
+    # check if the config has a user defined "Immediate"-rule. If not, create one
+    if not config.has_section("Rule:Immediate"):
+        config.add_section("Rule:Immediate")
+        config.set("Rule:Immediate", "action", "immediate")
 
-        if config.has_option(box, "rules"):
-            for rule in config.get(box, "rules").strip().split(','):
-                currule = rule.strip()
-                currule = "Rule:" + currule
-                print "evaluating", currule
-                if config.has_section(currule):
-                    print "valid rule:", currule
+    if args.boxes:
+        boxes = []
+        for box in args.boxes:
+            boxes.append("Box:" + box)
+    else:
+        boxes = config.sections()
 
-                    ret = False
-                    # ok, rule valid, what is the action
-                    if config.has_option(currule, "action"):
-                        action = config.get(currule, "action")
-                        if args.flush: action = "immediate"
-                        ### collect ###
-                        if action == "collect":
-                            ret = collect(currule, srcmaildir, dstmaildir)
-                        ### immediate ###
-                        elif action == "immediate":
-                            ret = immediate(srcmaildir, dstmaildir)
-                        ### fixed ###
-                        elif action == "fixed":
-                            ret = fixed(currule, srcmaildir, dstmaildir)
-                        ### block ###
-                        elif action == "block":
-                            ret = block(currule, srcmaildir, dstmaildir)
+    for box in boxes:
+        if box.startswith("Box:") and config.has_section(box):
+            print "---", box, "---"
+
+            srcmaildir = parsemaildir(box, "buffer_mdir")
+            dstmaildir = parsemaildir(box, "real_mdir")
+            if args.flush:
+                immediate(srcmaildir, dstmaildir)
+                continue
+
+            if config.has_option(box, "rules"):
+                for rule in config.get(box, "rules").strip().split(','):
+                    currule = rule.strip()
+                    currule = "Rule:" + currule
+                    print "evaluating", currule
+                    if config.has_section(currule):
+                        print "valid rule:", currule
+
+                        ret = False
+                        # ok, rule valid, what is the action
+                        if config.has_option(currule, "action"):
+                            action = config.get(currule, "action")
+                            if args.flush: action = "immediate"
+                            ### collect ###
+                            if action == "collect":
+                                ret = collect(currule, srcmaildir, dstmaildir)
+                            ### immediate ###
+                            elif action == "immediate":
+                                ret = immediate(srcmaildir, dstmaildir)
+                            ### fixed ###
+                            elif action == "fixed":
+                                ret = fixed(currule, srcmaildir, dstmaildir)
+                            ### block ###
+                            elif action == "block":
+                                ret = block(currule, srcmaildir, dstmaildir)
+                            else:
+                                print "unknown action"
+                            if ret: break
                         else:
-                            print "unknown action"
-                        if ret: break
+                            print "rule has no action"
                     else:
-                        print "rule has no action"
-                else:
-                    print "rule", currule, "does not exist"
-        else:
-            print "Box", box, "does not exist"
-    
+                        print "rule", currule, "does not exist"
+            else:
+                print "Box", box, "does not exist"
+
+if __name__ == "__main__":
+    main()
