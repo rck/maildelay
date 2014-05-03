@@ -51,6 +51,7 @@ def collect(rule, src, dst):
             srcf = os.path.join(src, mail)
             dstf = os.path.join(dst, mail)
             movefile(srcf, dstf)
+    else: print "no mail old enough"
 
     return True
 
@@ -87,7 +88,7 @@ def movefile(srcf, dstf):
     print "mv", srcf, dstf
 
     if I_KNOW_WHAT_I_DO:
-        pass # os.renmae
+        os.rename(srcf, dstf)
 
 def parsemaildir(box, option):
     if config.has_option(box, option):
