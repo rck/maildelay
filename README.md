@@ -62,6 +62,7 @@ rules: WorkBlocked, Immediate
 action: collect
 from: 09:00
 to: 17:00
+days: Mon, Tue, Wed, Thu, Fri
 for: 120
 
 [Rule:Fixed]
@@ -78,6 +79,10 @@ Rules/Actions
 -------------
 Rules are always evaluated from left to right. If a rule matches, the other
 rules are not evaluated.
+
+If a rule specifies a "days" string, it has to match the following condition:
+'if datetime.datetime.now().strftime("%a") in days'. If "days" is not
+specified, the rule is further evaluated on every day of the week.
 
 - immediate:
 Immediately deliver mails. This is an implicit rule that is always

@@ -161,6 +161,14 @@ def main():
                     if config.has_section(currule):
                         print "valid rule:", currule
 
+                        if config.has_option(currule, "days"):
+                           days = config.get(currule, "days")
+                           if not datetime.datetime.now().strftime("%a") in days:
+                               print "today is not in days"
+                               continue
+                           else:
+                               print "today is in days, eval further"
+
                         ret = False
                         # ok, rule valid, what is the action
                         if config.has_option(currule, "action"):
