@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 
 import ConfigParser
-import argparse
 import datetime
 import os
+import sys
 
 I_KNOW_WHAT_I_DO = False
 
@@ -108,6 +108,12 @@ def parsemaildir(box, option):
 config = ConfigParser.ConfigParser()
 
 def main():
+    try:
+        import argparse
+    except ImportError:
+        print "please install the argparse module from: https://pypi.python.org/pypi/argparse"
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(description="Delay mails and deliver them at \
                                      specified points in time")
     parser.add_argument('boxes', metavar="box", nargs='*',
