@@ -5,7 +5,7 @@ import datetime
 import os
 import sys
 
-I_KNOW_WHAT_I_DO = False
+dryrun = True
 
 def timeinrange(rule):
     if config.has_option(rule, "from") and \
@@ -87,7 +87,7 @@ def immediate(src, dst):
 def movefile(srcf, dstf):
     print "mv", srcf, dstf
 
-    if I_KNOW_WHAT_I_DO:
+    if not dryrun:
         os.rename(srcf, dstf)
 
 def parsemaildir(box, option):
@@ -126,7 +126,13 @@ def main():
                         (~/.maildelay.cfg is the default)")
     parser.add_argument("-f", "--flush", action='store_true', help = "flush the given (or\
                         all) mailboxes (i.e., apply Rule:Immediate)")
+    parser.add_argument("-d", "--dry", action='store_true', help = "dry run. Print which \
+                        files would be moved, but do not move them. Currently, this is \
+                        enabled by default and can only be disabled in the source code. \
+                        This will change if the code is considered stable.")
     args = parser.parse_args()
+
+    if args.dry: dryrun = True
 
     # config = ConfigParser.ConfigParser()
     config.read([os.path.expanduser(args.conffile)])

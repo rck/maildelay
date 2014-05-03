@@ -113,6 +113,7 @@ Todo
 shell-script using python.
 - More testing! It looks ok, what could possibly go wrong? For now it never
 ever moves mails, it is always in "dry-run" mode.
+- create a lock file, maybe allow a "custom" action (needs an API).
 
 Synopsis
 --------
@@ -133,4 +134,8 @@ optional arguments:
                         default)
   -f, --flush           flush the given (or all) mailboxes (i.e., apply
                         Rule:Immediate)
+  -d, --dry             dry run. Print which files would be moved, but do not
+                        move them. Currently, this is enabled by default and
+                        can only be disabled in the source code. This will
+                        change if the code is considered stable.
 ```
