@@ -4,6 +4,7 @@ import ConfigParser
 import datetime
 import os
 import sys
+import fcntl
 
 dryrun = True
 
@@ -109,6 +110,18 @@ def parsemaildir(box, option):
 config = ConfigParser.ConfigParser()
 
 def main():
+    # try to get a lock
+    lockname = os.path.basename(sys.argv[0]) + ".lock"
+    lockname = os.path.join("/var/lock", lockname)
+    lockfp = open(lockname, 'w')
+    try:
+        fcntl.lockf(lockfp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        print "cannot accquire lock file", lockname
+        sys.exit(1)
+    lockfp.write(str(os.getpid()) + '\n')
+    lockfp.flush()
+
     try:
         import argparse
     except ImportError:
@@ -201,6 +214,10 @@ def main():
                         print "rule", currule, "does not exist"
             else:
                 print "Box", box, "does not exist"
+
+    fcntl.lockf(lockfp, fcntl.LOCK_UN)
+    lockfp.close()
+    os.unlink(lockname)
 
 if __name__ == "__main__":
     main()

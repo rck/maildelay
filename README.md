@@ -113,7 +113,7 @@ Todo
 shell-script using python.
 - More testing! It looks ok, what could possibly go wrong? For now it never
 ever moves mails, it is always in "dry-run" mode.
-- create a lock file, maybe allow a "custom" action (needs an API).
+- Maybe allow a "custom" action (needs an API).
 
 Synopsis
 --------
