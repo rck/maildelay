@@ -104,8 +104,11 @@ def parsemaildir(box, option):
 
     # TODO: stat/check if it is a dir
     # check for some nasty shit in path names?
-    return os.path.join(maildir, "new")
-
+    directory = os.path.join(maildir, "new")
+    if os.path.isdir(directory):
+       return directory
+    else:
+       return False
 
 config = ConfigParser.ConfigParser()
 
@@ -168,6 +171,10 @@ def main():
 
             srcmaildir = parsemaildir(box, "buffer_mdir")
             dstmaildir = parsemaildir(box, "real_mdir")
+            if not srcmaildir or not dstmaildir:
+               print "srcmaildir or dstmaildir does not exist"
+               continue
+
             if args.flush:
                 immediate(srcmaildir, dstmaildir)
                 continue
