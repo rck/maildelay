@@ -102,7 +102,6 @@ def parsemaildir(box, option):
     if maildir.startswith('~'):
         maildir = os.path.expanduser(maildir)
 
-    # TODO: stat/check if it is a dir
     # check for some nasty shit in path names?
     directory = os.path.join(maildir, "new")
     if os.path.isdir(directory):
